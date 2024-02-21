@@ -4,6 +4,7 @@ const User = require('../models/users');
 require('dotenv').config();
 
 // Register a new user
+// Register a new user
 exports.register = async (req, res, next) => {
     try {
         const { username, email, password } = req.body;
@@ -13,11 +14,17 @@ exports.register = async (req, res, next) => {
         }
         const newUser = new User({ username, email, password });
         await newUser.save();
-        res.status(201).json({ message: 'User registered successfully' });
+
+        // Generate JWT token for the newly registered user
+        const token = jwt.sign({ id: newUser._id, username: newUser.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        // Return the token along with success message
+        res.status(201).json({ message: 'User registered successfully', token });
     } catch (error) {
         next(error);
     }
 };
+
 
 // Login
 exports.login = async (req, res, next) => {
@@ -31,7 +38,7 @@ exports.login = async (req, res, next) => {
         if (!validPassword) {
             return res.status(401).json({ message: 'Invalid password' });
         }
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.status(200).json({ token });
     } catch (error) {
         next(error);

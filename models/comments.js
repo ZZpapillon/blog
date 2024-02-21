@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const commentSchema = new Schema({
     message: { type: String, required: true },
-    author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+     author: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
     postId: { type: Schema.Types.ObjectId, ref: 'Post', required: true } // Reference to the post
 });
